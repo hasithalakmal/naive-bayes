@@ -46,15 +46,15 @@ public class NaiveBaseRunner {
                                                              String actorOneName, String actorTwoName, String actorThreeName,
                                                              String language, String country, String duration) {
         double posteriorProbability =0.00;
-        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTORS_FB_LIKES.toString(), directorFacebookLikes, true);
-        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE_NAME.toString(), actorOneName, true);
-        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_TWO_NAME.toString(), actorTwoName, true);
-        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_THREE_NAME.toString(), actorThreeName, true);
+        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), directorFacebookLikes, true);
+        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), actorOneName, true);
+        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), actorTwoName, true);
+        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), actorThreeName, true);
         double likelihoodProbabilityOnLanguage =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), language, true);
         double likelihoodProbabilityOnCountry =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), country, true);
         double likelihoodProbabilityOnDuration =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), duration, true);
         posteriorProbability = likelihoodProbabilityOnDirectorsFBLikes * likelihoodProbabilityOnActorOneName * likelihoodProbabilityOnActorTwoName * likelihoodProbabilityOnActorThreeName *
-                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTORS_FB_LIKES.toString()).getPositiveProbability();
+                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getPositiveProbability();
 
         return posteriorProbability;
     }
@@ -63,15 +63,15 @@ public class NaiveBaseRunner {
                                                              String actorOneName, String actorTwoName, String actorThreeName,
                                                              String language, String country, String duration) {
         double posteriorProbability =0.00;
-        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTORS_FB_LIKES.toString(), directorFacebookLikes, false);
-        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE_NAME.toString(), actorOneName, false);
-        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_TWO_NAME.toString(), actorTwoName, false);
-        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_THREE_NAME.toString(), actorThreeName, false);
+        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), directorFacebookLikes, false);
+        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), actorOneName, false);
+        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), actorTwoName, false);
+        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), actorThreeName, false);
         double likelihoodProbabilityOnLanguage =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), language, false);
         double likelihoodProbabilityOnCountry =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), country, false);
         double likelihoodProbabilityOnDuration =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), duration, false);
         posteriorProbability = likelihoodProbabilityOnDirectorsFBLikes * likelihoodProbabilityOnActorOneName * likelihoodProbabilityOnActorTwoName * likelihoodProbabilityOnActorThreeName *
-                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTORS_FB_LIKES.toString()).getNegativeProbability();
+                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getNegativeProbability();
 
         return posteriorProbability;
     }
@@ -125,13 +125,13 @@ public class NaiveBaseRunner {
     private static LikelihoodTable getLikelihoodTable(DataSet trainingDataSet, String criteria) {
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if (criteria.equals(CriteriaEnum.DIRECTORS_FB_LIKES.toString())) {
+        if (criteria.equals(CriteriaEnum.DIRECTOR.toString())) {
             mapOfLikelihoodRecodes = getListOfLikeHoodRecodesOnNumberOfDirectorsFBLikes(trainingDataSet);
-        } else if (criteria.equals(CriteriaEnum.ACTOR_ONE_NAME.toString())) {
+        } else if (criteria.equals(CriteriaEnum.ACTOR_ONE.toString())) {
             mapOfLikelihoodRecodes = getListOfLikeHoodRecodesOnActorOneName(trainingDataSet);
-        } else if (criteria.equals(CriteriaEnum.ACTOR_TWO_NAME.toString())) {
+        } else if (criteria.equals(CriteriaEnum.GENRES.toString())) {
             mapOfLikelihoodRecodes = getListOfLikeHoodRecodesOnActorTwoName(trainingDataSet);
-        } else if (criteria.equals(CriteriaEnum.ACTOR_THREE_NAME.toString())) {
+        } else if (criteria.equals(CriteriaEnum.BUDGET_ID.toString())) {
             mapOfLikelihoodRecodes = getListOfLikeHoodRecodesOnActorThreeName(trainingDataSet);
         } else if (criteria.equals(CriteriaEnum.COUNTRY.toString())) {
             mapOfLikelihoodRecodes = getListOfLikeHoodRecodesOnCountry(trainingDataSet);
@@ -172,7 +172,7 @@ public class NaiveBaseRunner {
         Map<String, LikelihoodRecode> likelihoodRecodeMap = new HashMap<String, LikelihoodRecode>();
 
         for (Recode recode : trainingDataSet.getListOfRecodes()) {
-            String directorFacebookLikes = recode.getDirectorFacebookLikes();
+            String directorFacebookLikes = recode.getDirector();
             populateLikelihoodRecode(likelihoodRecodeMap, recode, directorFacebookLikes);
         }
 
@@ -208,7 +208,7 @@ public class NaiveBaseRunner {
         Map<String, LikelihoodRecode> likelihoodRecodeMap = new HashMap<String, LikelihoodRecode>();
 
         for (Recode recode : trainingDataSet.getListOfRecodes()) {
-            String actorOneName = recode.getActorOneName();
+            String actorOneName = recode.getActorOne();
             populateLikelihoodRecode(likelihoodRecodeMap, recode, actorOneName);
         }
 
@@ -226,7 +226,7 @@ public class NaiveBaseRunner {
         Map<String, LikelihoodRecode> likelihoodRecodeMap = new HashMap<String, LikelihoodRecode>();
 
         for (Recode recode : trainingDataSet.getListOfRecodes()) {
-            String actorTwoName = recode.getActorTwoName();
+            String actorTwoName = recode.getGenres();
             populateLikelihoodRecode(likelihoodRecodeMap, recode, actorTwoName);
         }
 
@@ -244,7 +244,7 @@ public class NaiveBaseRunner {
         Map<String, LikelihoodRecode> likelihoodRecodeMap = new HashMap<String, LikelihoodRecode>();
 
         for (Recode recode : trainingDataSet.getListOfRecodes()) {
-            String threeName = recode.getActorThreeName();
+            String threeName = recode.getBudgetID();
             populateLikelihoodRecode(likelihoodRecodeMap, recode, threeName);
         }
 
@@ -343,20 +343,23 @@ public class NaiveBaseRunner {
          * High - English, Normal - Hindi
          * true - India, false - USA
          */
-        Recode r1 = new Recode("100", "aaa", "English", "USA", false);
-        Recode r2 = new Recode("100", "aaa", "English", "India", false);
-        Recode r3 = new Recode("200", "aaa", "English", "USA", true);
-        Recode r4 = new Recode("300", "bbb", "English", "USA", true);
-        Recode r5 = new Recode("300", "ccc", "Hindi", "USA", true);
-        Recode r6 = new Recode("300", "ccc", "Hindi", "India", false);
-        Recode r7 = new Recode("200", "ccc", "Hindi", "USA", true);
-        Recode r8 = new Recode("100", "bbb", "English", "USA", false);
-        Recode r9 = new Recode("100", "ccc", "English", "USA", true);
-        Recode r10 = new Recode("300", "bbb", "Hindi", "USA", true);
-        Recode r11 = new Recode("100", "bbb", "Hindi", "India", true);
-        Recode r12 = new Recode("200", "bbb", "English", "India", true);
-        Recode r13 = new Recode("200", "aaa", "Hindi", "USA", true);
-        Recode r14 = new Recode("300", "bbb", "English", "India", false);
+        Recode r1 = new Recode("Short",	"Action",	"D Most Popular",	"Most Popular",	"USA",	"English",	"High",	false);
+        Recode r2 = new Recode("Medium",	"Action",	"D Popular",	"Popular",	"USA",	"English",	"High",	false);
+        Recode r3 = new Recode("Short",	"Adventure",	"D Popular",	"Average",	"UK",	"English",	"Medium",	true);
+        Recode r4 = new Recode("Medium",	"Action",	"D Average",	"Most Popular",	"UK",	"English",	"Medium",	true);
+        Recode r5 = new Recode("Long",	"Action",	"D Most Popular",	"Least",	"USA",	"English",	"Medium",	true);
+        Recode r6 = new Recode("Medium",	"Action",	"D Average",	"Popular",	"USA",	"English",	"Low",	false);
+        Recode r7 = new Recode("Long",	"Adventure",	"D Least",	"Average",	"UK",	"English",	"Low",	false);
+        Recode r8 = new Recode("Long",	"Action",	"D Popular",	"Most Popular",	"USA",	"English",	"Low",	false);
+        Recode r9 = new Recode("Medium",	"Adventure",	"D Average",	"Least",	"USA",	"English",	"Low",	true);
+        Recode r10 = new Recode("Long",	"Action",	"D Most Popular",	"Popular",	"UK",	"English",	"Low",	true);
+        Recode r11 = new Recode("Short",	"Action",	"D Least",	"Average",	"USA",	"English",	"Medium",	false);
+        Recode r12 = new Recode("Short",	"Action",	"D Popular",	"Most Popular",	"UK",	"English",	"Medium",	false);
+        Recode r13 = new Recode("Medium",	"Action",	"D Least",	"Popular",	"USA",	"English",	"Medium",	false);
+        Recode r14 = new Recode("Short",	"Adventure",	"D Average",	"Average",	"UK",	"English",	"High",	false);
+        Recode r15 = new Recode("Medium",	"Action",	"D Most Popular",	"Most Popular",	"USA",	"English",	"Medium",	false);
+
+
 
         List<Recode> recodeList = new ArrayList<Recode>();
         recodeList.add(r1);
@@ -373,6 +376,7 @@ public class NaiveBaseRunner {
         recodeList.add(r12);
         recodeList.add(r13);
         recodeList.add(r14);
+        recodeList.add(r15);
 
         DataSet dataSet = new DataSet();
         dataSet.setListOfRecodes(recodeList);

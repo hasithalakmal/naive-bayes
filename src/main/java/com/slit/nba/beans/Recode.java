@@ -3,10 +3,10 @@ package com.slit.nba.beans;
 public class Recode {
 
     private String duration;
-    private String directorFacebookLikes;
-    private String actorOneName;
-    private String actorTwoName;
-    private String actorThreeName;
+    private String director;
+    private String actorOne;
+    private String genres;
+    private String budgetID;
     private String language;
     private String country;
 
@@ -17,33 +17,32 @@ public class Recode {
     }
 
     //temp construct
-    public Recode(String directorFacebookLikes, String actorOneName, String language,
+    public Recode(String Director, String actorOne, String language,
                   String country, boolean isProfitable) {
-        this.directorFacebookLikes = directorFacebookLikes;
-        this.actorOneName = actorOneName;
+        this.director = Director;
+        this.actorOne = actorOne;
         this.language = language;
         this.country = country;
         this.isProfitable = isProfitable;
     }
 
-    public Recode(String duration, String directorFacebookLikes, String actorOneName, String actorTwoName,
+    public Recode(String duration, String Director, String actorOne, String genres,
                   String actorThreeName, String language, String country) {
         this.duration = duration;
-        this.directorFacebookLikes = directorFacebookLikes;
-        this.actorOneName = actorOneName;
-        this.actorTwoName = actorTwoName;
-        this.actorThreeName = actorThreeName;
+        this.director = Director;
+        this.actorOne = actorOne;
+        this.genres = genres;
+        this.budgetID = actorThreeName;
         this.language = language;
         this.country = country;
     }
 
-    public Recode(String duration, String directorFacebookLikes, String actorOneName, String actorTwoName,
-                  String actorThreeName, String language, String country, boolean isProfitable) {
+    public Recode(String duration, String genres,  String director, String actorOne, String country, String language, String budgetID,   boolean isProfitable) {
         this.duration = duration;
-        this.directorFacebookLikes = directorFacebookLikes;
-        this.actorOneName = actorOneName;
-        this.actorTwoName = actorTwoName;
-        this.actorThreeName = actorThreeName;
+        this.director = director;
+        this.actorOne = actorOne;
+        this.genres = genres;
+        this.budgetID = budgetID;
         this.language = language;
         this.country = country;
         this.isProfitable = isProfitable;
@@ -57,36 +56,36 @@ public class Recode {
         this.duration = duration;
     }
 
-    public String getDirectorFacebookLikes() {
-        return directorFacebookLikes;
+    public String getDirector() {
+        return director;
     }
 
-    public void setDirectorFacebookLikes(String directorFacebookLikes) {
-        this.directorFacebookLikes = directorFacebookLikes;
+    public void setDirector(String director) {
+        this.director = director;
     }
 
-    public String getActorOneName() {
-        return actorOneName;
+    public String getActorOne() {
+        return actorOne;
     }
 
-    public void setActorOneName(String actorOneName) {
-        this.actorOneName = actorOneName;
+    public void setActorOne(String actorOne) {
+        this.actorOne = actorOne;
     }
 
-    public String getActorTwoName() {
-        return actorTwoName;
+    public String getGenres() {
+        return genres;
     }
 
-    public void setActorTwoName(String actorTwoName) {
-        this.actorTwoName = actorTwoName;
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 
-    public String getActorThreeName() {
-        return actorThreeName;
+    public String getBudgetID() {
+        return budgetID;
     }
 
-    public void setActorThreeName(String actorThreeName) {
-        this.actorThreeName = actorThreeName;
+    public void setBudgetID(String budgetID) {
+        this.budgetID = budgetID;
     }
 
     public String getLanguage() {

@@ -3,10 +3,10 @@ package com.slit.nba.beans;
 public enum CriteriaEnum {
 
     DURATION,
-    DIRECTORS_FB_LIKES,
-    ACTOR_ONE_NAME,
-    ACTOR_TWO_NAME,
-    ACTOR_THREE_NAME,
+    DIRECTOR,
+    ACTOR_ONE,
+    GENRES,
+    BUDGET_ID,
     LANGUAGE,
     COUNTRY;
 
