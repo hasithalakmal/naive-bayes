@@ -1,4 +1,4 @@
-package com.slit.nba.beans;
+package com.smile24es.ts_project.beans.Model;
 
 public class Recode {
 
@@ -111,4 +111,11 @@ public class Recode {
     public void setProfitable(boolean profitable) {
         isProfitable = profitable;
     }
+
+    @Override
+    public String toString() {
+        return "Recode{" + "duration=" + duration + ", director=" + director + ", actorOne=" + actorOne + ", genres=" + genres + ", budgetID=" + budgetID + ", language=" + language + ", country=" + country + ", isProfitable=" + isProfitable + '}';
+    }
+    
+    
 }

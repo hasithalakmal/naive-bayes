@@ -1,4 +1,4 @@
-package com.slit.nba.beans;
+package com.smile24es.ts_project.beans.Model;
 
 public class LikelihoodRecode {
     private String property;

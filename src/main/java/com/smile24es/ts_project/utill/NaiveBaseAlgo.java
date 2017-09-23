@@ -1,77 +1,102 @@
-package com.slit.nba.service;
+package com.smile24es.ts_project.utill;
 
-import com.slit.nba.beans.CriteriaEnum;
-import com.slit.nba.beans.DataSet;
-import com.slit.nba.beans.LikelihoodRecode;
-import com.slit.nba.beans.LikelihoodTable;
-import com.slit.nba.beans.ListOfLikelihoodTables;
-import com.slit.nba.beans.Recode;
+import com.smile24es.ts_project.beans.Model.CriteriaEnum;
+import com.smile24es.ts_project.beans.Model.DataSet;
+import com.smile24es.ts_project.beans.Model.LikelihoodRecode;
+import com.smile24es.ts_project.beans.Model.LikelihoodTable;
+import com.smile24es.ts_project.beans.Model.ListOfLikelihoodTables;
+import com.smile24es.ts_project.beans.Model.NiveBaseResult;
+import com.smile24es.ts_project.beans.Model.Recode;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
-public class NaiveBaseRunner {
+@Component("naiveBaseAlgo")
+public class NaiveBaseAlgo {
 
-    public static void main(String[] args) {
-        ListOfLikelihoodTables listOfLikelihoodTables = trainingNaiveBayesAlgo();
-        System.out.println(listOfLikelihoodTables.toString());
-        String jsonInString = null;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            jsonInString = mapper.writeValueAsString(listOfLikelihoodTables);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonInString);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
-        System.out.println(">>>>>>>>>>>>>> Training Completed >>>>>>>>>>>>>>>>>>>>>>>>");
-
-        double positiveLikelihood = calculatePosteriorProbabilityOfYes(listOfLikelihoodTables, "100", "aaa", "xxx", "xxx", "Hindi", "India", "xxx");
-        double negativeLikelihood = calculatePosteriorProbabilityOfNo(listOfLikelihoodTables, "100", "aaa", "xxx", "xxx", "Hindi", "India", "xxx");
+//    public static void main(String[] args) {
+//        ListOfLikelihoodTables listOfLikelihoodTables = trainingNaiveBayesAlgo();
+//        System.out.println(listOfLikelihoodTables.toString());
+//        String jsonInString = null;
+//        ObjectMapper mapper = new ObjectMapper();
+//        try {
+//            jsonInString = mapper.writeValueAsString(listOfLikelihoodTables);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//        System.out.println(jsonInString);
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//
+//        System.out.println(">>>>>>>>>>>>>> Training Completed >>>>>>>>>>>>>>>>>>>>>>>>");
+//
+//        double positiveLikelihood = calculatePosteriorProbabilityOfYes(listOfLikelihoodTables, "100", "aaa", "xxx", "xxx", "Hindi", "India", "xxx");
+//        double negativeLikelihood = calculatePosteriorProbabilityOfNo(listOfLikelihoodTables, "100", "aaa", "xxx", "xxx", "Hindi", "India", "xxx");
+//        double positiveProbability = positiveLikelihood / (positiveLikelihood + negativeLikelihood);
+//        double negativeProbability = negativeLikelihood / (positiveLikelihood + negativeLikelihood);
+//        System.out.println("positiveProbability = "+positiveProbability);
+//        System.out.println("negativeProbability = "+negativeProbability);
+//    }
+//    public static void main(String[] args) {
+//        DataSet trainingDataSet = getTrainingDataset();
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonInString = null;
+//        try {
+//            jsonInString = mapper.writeValueAsString(trainingDataSet);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//        System.out.println(jsonInString);
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+//    }
+    public NiveBaseResult getPrediction(ListOfLikelihoodTables listOfLikelihoodTables, Recode recode) {
+        double positiveLikelihood = calculatePosteriorProbabilityOfYes(listOfLikelihoodTables, recode);
+        double negativeLikelihood = calculatePosteriorProbabilityOfNo(listOfLikelihoodTables, recode);
+        System.out.println("******************************************************************");
+        System.out.println("positiveLikelihood = " + positiveLikelihood + " negativeLikelihood = " + negativeLikelihood);
+        System.out.println("******************************************************************");
         double positiveProbability = positiveLikelihood / (positiveLikelihood + negativeLikelihood);
         double negativeProbability = negativeLikelihood / (positiveLikelihood + negativeLikelihood);
-        System.out.println("positiveProbability = "+positiveProbability);
-        System.out.println("negativeProbability = "+negativeProbability);
+        NiveBaseResult niveBaseResult = new NiveBaseResult(positiveLikelihood, negativeLikelihood, positiveProbability, negativeProbability, recode);
+        if (positiveProbability >= 5.00) {
+            niveBaseResult.setIsProfitable(true);
+        } else {
+            niveBaseResult.setIsProfitable(false);
+        }
+        return niveBaseResult;
     }
 
-    private static double calculatePosteriorProbabilityOfYes(ListOfLikelihoodTables listOfLikelihoodTables, String directorFacebookLikes,
-                                                             String actorOneName, String actorTwoName, String actorThreeName,
-                                                             String language, String country, String duration) {
-        double posteriorProbability =0.00;
-        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), directorFacebookLikes, true);
-        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), actorOneName, true);
-        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), actorTwoName, true);
-        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), actorThreeName, true);
-        double likelihoodProbabilityOnLanguage =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), language, true);
-        double likelihoodProbabilityOnCountry =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), country, true);
-        double likelihoodProbabilityOnDuration =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), duration, true);
-        posteriorProbability = likelihoodProbabilityOnDirectorsFBLikes * likelihoodProbabilityOnActorOneName * likelihoodProbabilityOnActorTwoName * likelihoodProbabilityOnActorThreeName *
-                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getPositiveProbability();
+    private static double calculatePosteriorProbabilityOfYes(ListOfLikelihoodTables listOfLikelihoodTables, Recode recode) {
+        double posteriorProbability = 0.00;
+        double likelihoodProbabilityOnDirector = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), recode.getDirector(), true);
+        double likelihoodProbabilityOnActor = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), recode.getActorOne(), true);
+        double likelihoodProbabilityGenrs = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), recode.getGenres(), true);
+        double likelihoodProbabilityBudgetID = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), recode.getBudgetID(), true);
+        double likelihoodProbabilityOnLanguage = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), recode.getLanguage(), true);
+        double likelihoodProbabilityOnCountry = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), recode.getCountry(), true);
+        double likelihoodProbabilityOnDuration = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), recode.getDuration(), true);
+        posteriorProbability = likelihoodProbabilityOnDirector * likelihoodProbabilityOnActor * likelihoodProbabilityGenrs * likelihoodProbabilityBudgetID
+                * likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getPositiveProbability();
 
         return posteriorProbability;
     }
 
-    private static double calculatePosteriorProbabilityOfNo(ListOfLikelihoodTables listOfLikelihoodTables, String directorFacebookLikes,
-                                                             String actorOneName, String actorTwoName, String actorThreeName,
-                                                             String language, String country, String duration) {
-        double posteriorProbability =0.00;
-        double likelihoodProbabilityOnDirectorsFBLikes = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), directorFacebookLikes, false);
-        double likelihoodProbabilityOnActorOneName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), actorOneName, false);
-        double likelihoodProbabilityOnActorTwoName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), actorTwoName, false);
-        double likelihoodProbabilityOnActorThreeName =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), actorThreeName, false);
-        double likelihoodProbabilityOnLanguage =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), language, false);
-        double likelihoodProbabilityOnCountry =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), country, false);
-        double likelihoodProbabilityOnDuration =calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), duration, false);
-        posteriorProbability = likelihoodProbabilityOnDirectorsFBLikes * likelihoodProbabilityOnActorOneName * likelihoodProbabilityOnActorTwoName * likelihoodProbabilityOnActorThreeName *
-                likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getNegativeProbability();
+    private static double calculatePosteriorProbabilityOfNo(ListOfLikelihoodTables listOfLikelihoodTables, Recode recode) {
+        double posteriorProbability = 0.00;
+        double likelihoodProbabilityOnDirector = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DIRECTOR.toString(), recode.getDirector(), false);
+        double likelihoodProbabilityOnActor = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.ACTOR_ONE.toString(), recode.getActorOne(), false);
+        double likelihoodProbabilityGenrs = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.GENRES.toString(), recode.getGenres(), false);
+        double likelihoodProbabilityBudgetID = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.BUDGET_ID.toString(), recode.getBudgetID(), false);
+        double likelihoodProbabilityOnLanguage = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.LANGUAGE.toString(), recode.getLanguage(), false);
+        double likelihoodProbabilityOnCountry = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.COUNTRY.toString(), recode.getCountry(), false);
+        double likelihoodProbabilityOnDuration = calculateLikelihoodProbability(listOfLikelihoodTables, CriteriaEnum.DURATION.toString(), recode.getDuration(), false);
+        posteriorProbability = posteriorProbability = likelihoodProbabilityOnDirector * likelihoodProbabilityOnActor * likelihoodProbabilityGenrs * likelihoodProbabilityBudgetID
+                * likelihoodProbabilityOnLanguage * likelihoodProbabilityOnCountry * likelihoodProbabilityOnDuration * listOfLikelihoodTables.getListOfLikelihoodTables().get(CriteriaEnum.DIRECTOR.toString()).getNegativeProbability();
 
         return posteriorProbability;
     }
@@ -79,7 +104,7 @@ public class NaiveBaseRunner {
     private static double calculateLikelihoodProbability(ListOfLikelihoodTables listOfLikelihoodTables, String criteria, String property, boolean isProfitable) {
         double likelihoodProbability = 1.00;
         LikelihoodTable likelihoodTable = listOfLikelihoodTables.getListOfLikelihoodTables().get(criteria);
-        if(likelihoodTable != null) {
+        if (likelihoodTable != null) {
             LikelihoodRecode likelihoodRecode = likelihoodTable.getListOfLikelihoodRecode().get(property);
 
             double response = 0.00;
@@ -91,31 +116,32 @@ public class NaiveBaseRunner {
                 } else {
                     response = (double) likelihoodRecode.getNumberOfNegativeResponse();
                     totalResponse = (double) likelihoodTable.getTotalNegative();
+                    System.out.println("response = " + response + "totalResponse = " + totalResponse);
                 }
 
                 likelihoodProbability = response / totalResponse;
             }
         }
+        System.out.println("isProfitable = " + isProfitable + " --- " + criteria + " --- " + property + "  ---  " + likelihoodProbability);
         return likelihoodProbability;
     }
 
-    private static ListOfLikelihoodTables trainingNaiveBayesAlgo() {
-        DataSet trainingDataSet = getTrainingDataset();
+    public ListOfLikelihoodTables trainingNaiveBayesAlgo(DataSet trainingDataSet) {
+        //DataSet trainingDataSet = getTrainingDataset();
 
         ListOfLikelihoodTables listOfLikelihoodTables;
         Map<String, LikelihoodTable> likelihoodTables = new HashMap<String, LikelihoodTable>();
 
         for (CriteriaEnum criteriaEnum : CriteriaEnum.values()) {
             LikelihoodTable likelihoodTable = getLikelihoodTable(trainingDataSet, criteriaEnum.toString());
-            if(likelihoodTable != null){
+            if (likelihoodTable != null) {
                 likelihoodTables.put(criteriaEnum.toString(), likelihoodTable);
             }
         }
 
-
-        if(likelihoodTables.isEmpty()){
-            listOfLikelihoodTables =null;
-        }else{
+        if (likelihoodTables.isEmpty()) {
+            listOfLikelihoodTables = null;
+        } else {
             listOfLikelihoodTables = new ListOfLikelihoodTables();
             listOfLikelihoodTables.setListOfLikelihoodTables(likelihoodTables);
         }
@@ -144,9 +170,9 @@ public class NaiveBaseRunner {
         }
 
         LikelihoodTable likelihoodTable;
-        if(mapOfLikelihoodRecodes.isEmpty()) {
+        if (mapOfLikelihoodRecodes.isEmpty()) {
             likelihoodTable = null;
-        }else{
+        } else {
             likelihoodTable = new LikelihoodTable();
             likelihoodTable.setCriteria(criteria);
 
@@ -177,9 +203,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -213,9 +239,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -231,9 +257,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -249,9 +275,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -267,9 +293,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -285,9 +311,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -303,9 +329,9 @@ public class NaiveBaseRunner {
         }
 
         Map<String, LikelihoodRecode> mapOfLikelihoodRecodes;
-        if(likelihoodRecodeMap.isEmpty()){
+        if (likelihoodRecodeMap.isEmpty()) {
             mapOfLikelihoodRecodes = new HashMap<String, LikelihoodRecode>();
-        }else{
+        } else {
             mapOfLikelihoodRecodes = calculateLikelihoodRecodesProbabilities(trainingDataSet, likelihoodRecodeMap);
         }
 
@@ -313,24 +339,24 @@ public class NaiveBaseRunner {
     }
 
     private static Map<String, LikelihoodRecode> calculateLikelihoodRecodesProbabilities(DataSet trainingDataSet,
-                                                                                         Map<String, LikelihoodRecode> likelihoodRecodeMap) {
+            Map<String, LikelihoodRecode> likelihoodRecodeMap) {
         boolean isZeroResults = false;
-        for(LikelihoodRecode likelihoodRecode : likelihoodRecodeMap.values()){
-            if(likelihoodRecode.getNumberOfPositiveResponse() == 0 || likelihoodRecode.getNumberOfNegativeResponse() == 0){
+        for (LikelihoodRecode likelihoodRecode : likelihoodRecodeMap.values()) {
+            if (likelihoodRecode.getNumberOfPositiveResponse() == 0 || likelihoodRecode.getNumberOfNegativeResponse() == 0) {
                 isZeroResults = true;
                 break;
             }
         }
 
-        if(isZeroResults) {
-            for (LikelihoodRecode likelihoodRecode : likelihoodRecodeMap.values()) {
-                likelihoodRecode.increaseNumberOfPositiveResponse();
-                likelihoodRecode.increaseNumberOfNegativeResponse();
-            }
-        }
+//        if (isZeroResults) {
+//            for (LikelihoodRecode likelihoodRecode : likelihoodRecodeMap.values()) {
+//                likelihoodRecode.increaseNumberOfPositiveResponse();
+//                likelihoodRecode.increaseNumberOfNegativeResponse();
+//            }
+//        }
 
         for (LikelihoodRecode likelihoodRecode : likelihoodRecodeMap.values()) {
-            double probability = ((double) (likelihoodRecode.getNumberOfPositiveResponse() + likelihoodRecode.getNumberOfPositiveResponse()) / (double) trainingDataSet.getListOfRecodes().size());
+            double probability = ((double) (likelihoodRecode.getNumberOfPositiveResponse() + likelihoodRecode.getNumberOfNegativeResponse()) / (double) trainingDataSet.getListOfRecodes().size());
             likelihoodRecode.setCriteriaProbability(probability);
         }
         return likelihoodRecodeMap;
@@ -338,28 +364,24 @@ public class NaiveBaseRunner {
 
     private static DataSet getTrainingDataset() {
         /**
-         * rainy - 100, Overcast - 200, sunny - 300
-         * hot - aaa, mild - bbb, cool - ccc
-         * High - English, Normal - Hindi
-         * true - India, false - USA
+         * rainy - 100, Overcast - 200, sunny - 300 hot - aaa, mild - bbb, cool
+         * - ccc High - English, Normal - Hindi true - India, false - USA
          */
-        Recode r1 = new Recode("Short",	"Action",	"D Most Popular",	"Most Popular",	"USA",	"English",	"High",	false);
-        Recode r2 = new Recode("Medium",	"Action",	"D Popular",	"Popular",	"USA",	"English",	"High",	false);
-        Recode r3 = new Recode("Short",	"Adventure",	"D Popular",	"Average",	"UK",	"English",	"Medium",	true);
-        Recode r4 = new Recode("Medium",	"Action",	"D Average",	"Most Popular",	"UK",	"English",	"Medium",	true);
-        Recode r5 = new Recode("Long",	"Action",	"D Most Popular",	"Least",	"USA",	"English",	"Medium",	true);
-        Recode r6 = new Recode("Medium",	"Action",	"D Average",	"Popular",	"USA",	"English",	"Low",	false);
-        Recode r7 = new Recode("Long",	"Adventure",	"D Least",	"Average",	"UK",	"English",	"Low",	false);
-        Recode r8 = new Recode("Long",	"Action",	"D Popular",	"Most Popular",	"USA",	"English",	"Low",	false);
-        Recode r9 = new Recode("Medium",	"Adventure",	"D Average",	"Least",	"USA",	"English",	"Low",	true);
-        Recode r10 = new Recode("Long",	"Action",	"D Most Popular",	"Popular",	"UK",	"English",	"Low",	true);
-        Recode r11 = new Recode("Short",	"Action",	"D Least",	"Average",	"USA",	"English",	"Medium",	false);
-        Recode r12 = new Recode("Short",	"Action",	"D Popular",	"Most Popular",	"UK",	"English",	"Medium",	false);
-        Recode r13 = new Recode("Medium",	"Action",	"D Least",	"Popular",	"USA",	"English",	"Medium",	false);
-        Recode r14 = new Recode("Short",	"Adventure",	"D Average",	"Average",	"UK",	"English",	"High",	false);
-        Recode r15 = new Recode("Medium",	"Action",	"D Most Popular",	"Most Popular",	"USA",	"English",	"Medium",	false);
-
-
+        Recode r1 = new Recode("Short", "Action", "D Most Popular", "Most Popular", "USA", "English", "High", false);
+        Recode r2 = new Recode("Medium", "Action", "D Popular", "Popular", "USA", "English", "High", false);
+        Recode r3 = new Recode("Short", "Adventure", "D Popular", "Average", "UK", "English", "Medium", true);
+        Recode r4 = new Recode("Medium", "Action", "D Average", "Most Popular", "UK", "English", "Medium", true);
+        Recode r5 = new Recode("Long", "Action", "D Most Popular", "Least", "USA", "English", "Medium", true);
+        Recode r6 = new Recode("Medium", "Action", "D Average", "Popular", "USA", "English", "Low", false);
+        Recode r7 = new Recode("Long", "Adventure", "D Least", "Average", "UK", "English", "Low", false);
+        Recode r8 = new Recode("Long", "Action", "D Popular", "Most Popular", "USA", "English", "Low", false);
+        Recode r9 = new Recode("Medium", "Adventure", "D Average", "Least", "USA", "English", "Low", true);
+        Recode r10 = new Recode("Long", "Action", "D Most Popular", "Popular", "UK", "English", "Low", true);
+        Recode r11 = new Recode("Short", "Action", "D Least", "Average", "USA", "English", "Medium", false);
+        Recode r12 = new Recode("Short", "Action", "D Popular", "Most Popular", "UK", "English", "Medium", false);
+        Recode r13 = new Recode("Medium", "Action", "D Least", "Popular", "USA", "English", "Medium", false);
+        Recode r14 = new Recode("Short", "Adventure", "D Average", "Average", "UK", "English", "High", false);
+        Recode r15 = new Recode("Medium", "Action", "D Most Popular", "Most Popular", "USA", "English", "Medium", false);
 
         List<Recode> recodeList = new ArrayList<Recode>();
         recodeList.add(r1);

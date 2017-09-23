@@ -1,4 +1,4 @@
-package com.slit.nba.beans;
+package com.smile24es.ts_project.beans.Model;
 
 import java.util.List;
 import java.util.Map;
